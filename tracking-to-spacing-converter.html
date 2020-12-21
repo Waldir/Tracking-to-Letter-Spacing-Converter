@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-134344925-3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-134344925-3');
+    </script>
+    <title>Letter Tracking to Letter Spacing Converter</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 20px;
+            background-color: #343a40;
+            color: #f8f9fa;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .container {
+            width: 100%;
+            padding: 20px 40px;
+        }
+
+        #newSpacing {
+            width: 500px;
+            margin: 2rem 0 1rem 0;
+        }
+
+        #copyText {
+            margin-left: 5px;
+        }
+
+        input[type='text'],
+        input[type='number'],
+        #copyText {
+            border-radius: 5px;
+            border: 1px solid #007bff;
+            padding: .5em;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        input[type='text'],
+        input[type='radio'] {
+            margin-top: 1rem;
+        }
+
+        h1 {
+            font-variant: small-caps;
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .flex {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flex-full {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .col {
+            text-align: center;
+        }
+
+        @media (min-width: 576px) {
+            .container {
+                max-width: 500px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tracking to Spacing Converter</h1>
+    <p>
+        Use to tool to convert letter tracking from PhotoShop or Illustrator into css letter spacing based on font pixel
+        size or em units.
+    </p>
+    <div class="container">
+        <div class="flex">
+            <div class="col">
+                <label for="trackVal">Tracking: <br></label><input type="text" placeholder="20" id="trackVal" value="20" min="0" max="999" style="width: 5em" />
+            </div>
+            <div class="col">
+                <span id="fontSizeWrap" style="display: none;">
+                    <label for="fontSize">Font size (px): <br></label><input type="text" placeholder="Font size" id="fontSize" value="16" min="0" max="999" style="width: 5em" />
+                </span>
+            </div>
+            <div class="col">
+                Unit: <br>
+                <input type="radio" name="type" id="FontPx" checked="checked" /> <label for="FontPx">px</label>
+                <input type="radio" name="type" id="FontEm" /> <label for="FontEm">em</label>
+            </div>
+            <div class="flex-full">
+                <input type="text" id="newSpacing" readonly><button id="copyText">Copy</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function (doc) {
+            const coin = function f(selector, settings) {
+                var settings = settings || {};
+                var content;
+                var duration = +settings.duration || 1500;
+                var distance = +settings.distance || 75;
+                var coin = doc.createElement('div');
+                var wrap = doc.createElement('div');
+                if (settings.content) {
+                    content = doc.createElement('div');
+                    content.innerHTML = settings.content;
+                } else {
+                    content = doc.createElement('img');
+                    content.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAQBAMAAADQT4M0AAAAElBMVEUAAAAAAAD42CD4+ADo8PjYoDitpXIeAAAAAXRSTlMAQObYZgAAAEJJREFUCNdjYGAQFGQAkSwOQJqRRUlJVYCB0cnEGUgJKDsrGgUyiBBDOYEoAQjFqGwoDDJFSUkpVABodGgoxAogCQDJ3A0z5Q8wzQAAAABJRU5ErkJggg==';
+                    content.style.cssText = 'width: 12px; height: 16px; transition: transform ' + duration + 'ms cubic-bezier(0.215, 0.61, 0.355, 1)';
+                }
+
+                coin.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%)';
+                coin.className = settings.class || 'coin';
+                coin.appendChild(content);
+
+                wrap.style.cssText = 'opacity: 1; transition: all ' + duration + 'ms; position:absolute;top:' + selector.getBoundingClientRect().top + 'px;left:' + selector.getBoundingClientRect().left + 'px;min-width:' + selector.clientWidth + 'px';
+                wrap.appendChild(coin);
+                var newTop = (parseInt(wrap.style.top.replace(/px/, '')) - distance) + 'px';
+                doc.body.appendChild(wrap);
+                setTimeout(function f() {
+                    content.style.transform += 'rotateY(720deg)';
+                    wrap.style.top = newTop;
+                    wrap.style.opacity = 0;
+                }, 0);
+                setTimeout(function f() {
+                    wrap.remove();
+                }, duration);
+            }
+
+            const el = [];
+            ['trackVal', 'fontSize', 'FontEm', 'FontPx', 'newSpacing', 'fontSizeWrap', 'copyText'].forEach((val) => {
+                el[val] = doc.getElementById(val);
+                if (localStorage.getItem(val)) el[val].value = localStorage.getItem(val);
+            });
+
+            const FontEmCk = localStorage.getItem('FontEm') ? localStorage.getItem('FontEm') : el.FontEm.checked;
+            el.FontEm.checked = (FontEmCk === 'true');
+
+            function cal() {
+                const input = parseInt(el.trackVal.value, 10);
+                localStorage.setItem("FontEm", el.FontEm.checked);
+                localStorage.setItem("trackVal", input);
+                if (el.FontEm.checked === true) {
+                    el.newSpacing.value = `letter-spacing: ${input / 1000}em;`;
+                    el.fontSizeWrap.style.display = "none";
+                } else {
+                    const fontSize = parseInt(el.fontSize.value, 10);
+                    localStorage.setItem('fontSize', fontSize);
+                    el.newSpacing.value = `letter-spacing: ${(input * fontSize) / 1000}px;`;
+                    el.fontSizeWrap.style.display = "inline-block";
+                }
+            }
+
+            function selectText() {
+                coin(this);
+                el.newSpacing.focus();
+                el.newSpacing.select();
+                doc.execCommand('copy');
+            }
+
+            cal();
+            el.trackVal.addEventListener('keyup', cal);
+            el.fontSize.addEventListener('keyup', cal);
+            el.FontEm.addEventListener('click', cal);
+            el.FontPx.addEventListener('click', cal);
+            el.copyText.addEventListener('click', selectText);
+            el.newSpacing.addEventListener('click', selectText);
+
+        })(typeof document === 'object' && document);
+    </script>
+</body>
+
+</html>
